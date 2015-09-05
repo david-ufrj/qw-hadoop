@@ -107,10 +107,7 @@ public class SumAxis {
 
                             } else {
                                 if (fixedAxis[i].equals(records[i+1])) {
-                                    //if (i + 1 != axis) {
                                         continue;
-                                        //outputKey += "," + records[i+1];
-                                    //}
 
                                 } else {
                                     writeOutput = false;
@@ -167,25 +164,12 @@ public class SumAxis {
                                     outputValue += records[i+1];
                                 }
 
-                            } //else {
-                                //if (fixedAxis[i].equals(records[i+1])) {
-                                 //   if (i != axis) {
-                                  //      outputValue += records[i+1];
-                                   //     if (i + 1 != fixedAxis.length) {
-                                     //       outputValue += ",";
-                                       // }
-                                    //}
-
-                                //} else {
-                                //    writeOutput = false;
-                                //    break;
-                                //}
-                            //}
+                            }
                         }
-                        //if (writeOutput) {
-                            context.write(new Text(outputKey) , new Text(
-                                    outputValue));
-                        //}
+
+                        context.write(new Text(outputKey) , new Text(
+                                outputValue));
+
                     } else {
                         throw new IllegalArgumentException("You should give "
                                 + Integer.toString(records.length - NOT_INDEX)
