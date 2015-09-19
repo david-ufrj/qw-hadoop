@@ -35,7 +35,7 @@ import org.apache.hadoop.conf.Configuration;
  * This software simulate a quantum walk or other problem that can be solved
  * with a sequence of matrices multiplication using Apache Hadoop.
  *
- * @version 1.3 8 Aug 2015
+ * @version 1.4 17 Sep 2015
  * @author David Souza
  */
 
@@ -272,11 +272,9 @@ public class Quandoop {
 
                 for (int j = numberU - 1; j > -1; j--) {
 
-                    pt = new Path(psiT + "_tmp");
-                    fs.delete(pt, true);
-                    fs.mkdirs(pt);
+                    pt = new Path(psiT);
 
-                    status = fs.listStatus(new Path(psiT));
+                    status = fs.listStatus(pt);
                     for (FileStatus stat : status) {
 
                         if (stat.getPath().toString().indexOf("_logs") > -1) {
@@ -286,7 +284,8 @@ public class Quandoop {
                                     > -1) {
                                 continue;
                             } else {
-                                fs.rename(stat.getPath(), pt);
+                                fs.rename(stat.getPath(), new Path(stat.
+                                            getPath().toString() + "psiFile"));
                             }
                         }
                     }
@@ -319,21 +318,37 @@ public class Quandoop {
                                 false, conf, null);
                     }
 
-                    pt = new Path(psiT);
-                    fs.delete(pt, true);
-
-                    pt = new Path(psiT + "_tmp");
-
                     status = fs.listStatus(new Path(workDir + "u"
                                 + Integer.toString(j)));
                     for (FileStatus stat : status) {
 
-                        fu.copy(fs, stat.getPath(), fs, pt, false, true, conf);
+                        if (stat.getPath().toString().indexOf("psiFile") > -1) {
+                            fs.delete(stat.getPath(), true);
+                        }
                     }
 
+                    pt = new Path(workDir + "u" + Integer.toString(j));
+                    status = fs.listStatus(new Path(psiT));
+                    for (FileStatus stat : status) {
+
+                        if (stat.getPath().toString().indexOf("_logs") > -1) {
+                            continue;
+                        } else {
+                            if (stat.getPath().toString().indexOf("_SUCCESS")
+                                    > -1) {
+                                continue;
+                            } else {
+                                fs.rename(stat.getPath(), pt);
+                            }
+                        }
+                    }
+
+                    pt = new Path(psiT);
+                    fs.delete(pt, true);
+
                     pr = rt.exec("hadoop jar " + jarDir
-                            + "operations.jar operations.MultMatrix " + psiT
-                            + "_tmp" + " " + psiT + " B");
+                            + "operations.jar operations.MultMatrix " + workDir
+                            + "u" + Integer.toString(j) + " " + psiT + " B");
 
                     pr.waitFor();
 
