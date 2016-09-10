@@ -37,9 +37,7 @@ lines with the data. The format is:
 TYPE,M,N,REALjIMAGINARY
     where:
         -TYPE: A or B. A is the left matrix. B is
-               the right matString absSquare;
-        String reshape;
-        String pdf;rix.
+               the right matrix.
         -M and N: The row and column value. A
                   vector must have a column
                   matrix format: TYPE,M,0
